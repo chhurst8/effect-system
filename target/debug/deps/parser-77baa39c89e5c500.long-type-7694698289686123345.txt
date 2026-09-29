@@ -1,1 +1,0 @@
-(dyn for<'a, 'b, 'c> FnMut(&'a [Spanned<Token<'b>>], &'c mut usize) -> Option<Option<(Spanned<Operator>, Spanned<Box<Expr>>)>> + 'static)

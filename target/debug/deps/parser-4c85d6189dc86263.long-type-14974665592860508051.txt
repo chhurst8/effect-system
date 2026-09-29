@@ -1,1 +1,0 @@
-(dyn for<'a, 'b, 'c> std::ops::FnMut(&'a [Spanned<lexer::Token<'b>>], &'c mut usize) -> std::option::Option<std::option::Option<(Spanned<ast::Operator>, Spanned<std::boxed::Box<ast::Expr>>)>> + 'static)
