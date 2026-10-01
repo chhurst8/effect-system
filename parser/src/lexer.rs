@@ -15,6 +15,20 @@ pub enum Token<'a> {
     RightParen,
     Error(char),
 }
+impl Token<'_> {
+    pub(crate) fn to_operator(&self) -> crate::ast::Operator {
+        match self {
+            Token::Plus => crate::ast::Operator::Plus,
+            Token::Minus => crate::ast::Operator::Minus,
+            Token::Times => crate::ast::Operator::Times,
+            Token::Divide => crate::ast::Operator::Divide,
+            Token::Equals => todo!(),
+            Token::DoubleEquals => todo!(),
+            Token::Semicolon => crate::ast::Operator::Semicolon,
+            _ => unreachable!(),
+        }
+    }
+}
 
 pub fn single_char_span<'a>(token: Token<'a>, position: usize) -> Spanned<Token<'a>> {
     Spanned::<Token>(
@@ -58,6 +72,11 @@ pub fn lex<'a>(input: &'a str) -> Vec<Spanned<Token<'a>>> {
                 }
                 _ => consume_single_char(Token::Equals, &mut position),
             },
+            ';' => consume_single_char(Token::Semicolon, &mut position),
+            '\n' | '\t' | ' ' => {
+                position += 1;
+                continue;
+            }
             x => {
                 if x.is_numeric() {
                     consume_number(input, &mut position)
@@ -71,17 +90,14 @@ pub fn lex<'a>(input: &'a str) -> Vec<Spanned<Token<'a>>> {
     tokens
 }
 
-fn peek<'a>(input: &'a str, position: usize) -> Option<char> {
+fn peek(input: &str, position: usize) -> Option<char> {
     input.chars().nth(position + 1)
 }
 
 fn consume_number<'a>(input: &'a str, position: &mut usize) -> Spanned<Token<'a>> {
     let mut float = false;
     let start = *position;
-    loop {
-        let Some(ch) = input.chars().nth(*position) else {
-            break;
-        };
+    while let Some(ch) = input.chars().nth(*position) {
         match ch {
             '.' => {
                 if !float {
